@@ -6,17 +6,25 @@ import 'package:campo_minado/models/explosao_exception.dart';
 import 'package:campo_minado/models/tabuleiro.dart';
 import 'package:flutter/material.dart';
 
-class CampoMinadoApp extends StatelessWidget {
+class CampoMinadoApp extends StatefulWidget {
+  @override
+  State<CampoMinadoApp> createState() => _CampoMinadoAppState();
+}
+
+class _CampoMinadoAppState extends State<CampoMinadoApp> {
+  bool? _venceu ;
+  Tabuleiro _tabuleiro =
+      new Tabuleiro(linhas: 12, colunas: 12, qtdeBombas: 3);
   @override
   Widget build(BuildContext context) {
     Campo campo = Campo(linha: 0, coluna: 0);
-    
+
     return MaterialApp(
       home: Scaffold(
-        appBar: ResultadoWidget(venceu: null, onReiniciar: _reiniciar),
+        appBar: ResultadoWidget(venceu: _venceu, onReiniciar: _reiniciar),
         body: Container(
           child: TabuleiroWidget(
-              tabuleiro: Tabuleiro(linhas: 15, colunas: 15, qtdeBombas: 10),
+              tabuleiro: _tabuleiro,
               onAbrir: _abrir,
               onAlternarMarcacao: _alternarMarcacao),
         ),
