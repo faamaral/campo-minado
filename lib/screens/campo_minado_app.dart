@@ -12,9 +12,8 @@ class CampoMinadoApp extends StatefulWidget {
 }
 
 class _CampoMinadoAppState extends State<CampoMinadoApp> {
-  bool? _venceu ;
-  Tabuleiro _tabuleiro =
-      new Tabuleiro(linhas: 12, colunas: 12, qtdeBombas: 3);
+  bool? _venceu;
+  Tabuleiro _tabuleiro = new Tabuleiro(linhas: 12, colunas: 12, qtdeBombas: 3);
   @override
   Widget build(BuildContext context) {
     Campo campo = Campo(linha: 0, coluna: 0);
@@ -32,9 +31,36 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
     );
   }
 
-  void _reiniciar() {}
+  void _reiniciar() {
+    setState(() {
+      _venceu = null;
+      _tabuleiro.reiniciar();
+    });
+  }
 
-  void _abrir(Campo campo) {}
+  void _abrir(Campo campo) {
+    if (_venceu != null) {
+      return;
+    }
+    setState(() {
+      try {
+        campo.abrir();
+        if (_tabuleiro.resolvido) {
+          _venceu = true;
+        }
+      } on ExplosaoException {
+        _venceu = false;
+        _tabuleiro.revelarBomba();
+      }
+    });
+  }
 
-  void _alternarMarcacao(Campo campo) {}
+  void _alternarMarcacao(Campo campo) {
+    setState(() {
+      campo.alterarMarcacao();
+      if (_tabuleiro.resolvido) {
+        _venceu = true;
+      }
+    });
+  }
 }
