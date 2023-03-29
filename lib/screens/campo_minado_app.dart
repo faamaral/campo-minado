@@ -13,7 +13,7 @@ class CampoMinadoApp extends StatefulWidget {
 
 class _CampoMinadoAppState extends State<CampoMinadoApp> {
   bool? _venceu;
-  Tabuleiro _tabuleiro = new Tabuleiro(linhas: 12, colunas: 12, qtdeBombas: 3);
+  Tabuleiro? _tabuleiro;
   @override
   Widget build(BuildContext context) {
     Campo campo = Campo(linha: 0, coluna: 0);
@@ -22,19 +22,38 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
       home: Scaffold(
         appBar: ResultadoWidget(venceu: _venceu, onReiniciar: _reiniciar),
         body: Container(
-          child: TabuleiroWidget(
-              tabuleiro: _tabuleiro,
-              onAbrir: _abrir,
-              onAlternarMarcacao: _alternarMarcacao),
+          color: Colors.grey,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return TabuleiroWidget(
+                tabuleiro:
+                    _getTabuleiro(constraints.maxWidth, constraints.maxHeight),
+                onAbrir: _abrir,
+                onAlternarMarcacao: _alternarMarcacao,
+              );
+            },
+          ),
         ),
       ),
+      debugShowCheckedModeBanner: false,
     );
+  }
+
+  Tabuleiro _getTabuleiro(double largura, double altura) {
+    if (_tabuleiro == null) {
+      int qtdColunas = 15;
+      double tamanhoCampo = largura / qtdColunas;
+      int qtdLinhas = (altura / tamanhoCampo).floor();
+      _tabuleiro =
+          new Tabuleiro(linhas: qtdLinhas, colunas: qtdColunas, qtdeBombas: 50);
+    }
+    return _tabuleiro!;
   }
 
   void _reiniciar() {
     setState(() {
       _venceu = null;
-      _tabuleiro.reiniciar();
+      _tabuleiro?.reiniciar();
     });
   }
 
@@ -45,12 +64,12 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
     setState(() {
       try {
         campo.abrir();
-        if (_tabuleiro.resolvido) {
+        if (_tabuleiro!.resolvido) {
           _venceu = true;
         }
       } on ExplosaoException {
         _venceu = false;
-        _tabuleiro.revelarBomba();
+        _tabuleiro!.revelarBomba();
       }
     });
   }
@@ -58,7 +77,7 @@ class _CampoMinadoAppState extends State<CampoMinadoApp> {
   void _alternarMarcacao(Campo campo) {
     setState(() {
       campo.alterarMarcacao();
-      if (_tabuleiro.resolvido) {
+      if (_tabuleiro!.resolvido) {
         _venceu = true;
       }
     });
